@@ -6,59 +6,40 @@ import (
 	"runtime"
 )
 
-// Config holds application configuration
 type Config struct {
-	// DataSources is a list of URLs to download data from
-	DataSources []string `json:"data_sources"`
-
-	// TargetRate is the target data consumption rate in MB/minute
-	TargetRate int `json:"target_rate"`
-
-	// Duration is how long to run in minutes (0 for indefinite)
-	Duration int `json:"duration"`
-
-	// VerboseLogging enables detailed logging
-	VerboseLogging bool `json:"verbose_logging"`
-
-	// SaveMetrics enables saving metrics to a file
-	SaveMetrics bool `json:"save_metrics"`
-
-	// MetricsFile is the file to save metrics to
-	MetricsFile string `json:"metrics_file"`
-
-	// ConcurrencyFactor adjusts the number of workers relative to CPU cores
-	ConcurrencyFactor int `json:"concurrency_factor"`
-
-	// UseRandomization adds random parameters to requests to avoid caching
-	UseRandomization bool `json:"use_randomization"`
-
-	// RequestTimeout is the timeout for HTTP requests in seconds
-	RequestTimeout int `json:"request_timeout"`
+	DataSources       []string `json:"data_sources"`
+	TargetRate        int      `json:"target_rate"`
+	Duration          int      `json:"duration"`
+	VerboseLogging    bool     `json:"verbose_logging"`
+	SaveMetrics       bool     `json:"save_metrics"`
+	MetricsFile       string   `json:"metrics_file"`
+	ConcurrencyFactor int      `json:"concurrency_factor"`
+	UseRandomization  bool     `json:"use_randomization"`
+	RequestTimeout    int      `json:"request_timeout"`
 }
 
-// DefaultConfig returns the default configuration optimized for 200MB/min
 func DefaultConfig() *Config {
 	return &Config{
-		// Use multiple data sources for reliability
 		DataSources: []string{
-			"https://speed.cloudflare.com/10mb.bin",
-			"https://speed.cloudflare.com/100mb.bin",
-			"https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js",
-			"https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js",
-			"https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js",
+			"https://speed.cloudflare.com/1000mb.bin",                                                   // 1 GB
+			"https://ftp.arnes.si/software/ubuntu-releases/20.04/ubuntu-20.04.3-desktop-amd64.iso",      // ~2.5 GB
+			"https://releases.ubuntu.com/20.04.4/ubuntu-20.04.4-desktop-amd64.iso",                      // ~2.5 GB
+			"https://ftp.gnu.org/gnu/gcc/gcc-11.1.0/gcc-11.1.0.tar.xz",                                  // ~100 MB
+			"https://download.blender.org/release/Blender2.93/blender-2.93.0-linux64.tar.xz",            // ~200 MB
+			"https://ftp.mozilla.org/pub/firefox/releases/90.0/linux-x86_64/en-US/firefox-90.0.tar.bz2", // ~70 MB
+			"https://ftp.gnu.org/gnu/binutils/binutils-2.36.1.tar.xz",                                   // ~20 MB
 		},
-		TargetRate:        200, // 200 MB per minute
-		Duration:          0,   // Run indefinitely by default
+		TargetRate:        1024,
+		Duration:          0,
 		VerboseLogging:    false,
 		SaveMetrics:       true,
 		MetricsFile:       "dataconsumer_metrics.json",
 		ConcurrencyFactor: runtime.NumCPU(),
 		UseRandomization:  true,
-		RequestTimeout:    60, // 60 seconds
+		RequestTimeout:    60,
 	}
 }
 
-// LoadConfig loads configuration from a file
 func LoadConfig(path string) (*Config, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -71,11 +52,9 @@ func LoadConfig(path string) (*Config, error) {
 	if err := decoder.Decode(config); err != nil {
 		return nil, err
 	}
-
 	return config, nil
 }
 
-// SaveConfig saves the current configuration to a file
 func SaveConfig(config *Config, path string) error {
 	file, err := os.Create(path)
 	if err != nil {
