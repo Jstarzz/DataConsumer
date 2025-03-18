@@ -173,10 +173,7 @@ func handleTicker(metricsCollector *metrics.Collector, lastBytes *int64, lastTim
 	now := time.Now()
 	bytesSinceLast := stats.BytesTransferred - *lastBytes
 	timeSinceLast := now.Sub(*lastTime).Seconds()
-	currentRate := float64(0)
-	if timeSinceLast > 0 {
-		currentRate = float64(bytesSinceLast) / timeSinceLast * 60 / 1024 / 1024
-	}
+	currentRate := calculateCurrentRate(bytesSinceLast, timeSinceLast)
 	*lastBytes = stats.BytesTransferred
 	*lastTime = now
 
@@ -186,6 +183,13 @@ func handleTicker(metricsCollector *metrics.Collector, lastBytes *int64, lastTim
 		stats.AverageRate,
 		stats.PeakRate,
 		stats.ElapsedTime.Round(time.Second))
+}
+
+func calculateCurrentRate(bytesSinceLast int64, timeSinceLast float64) float64 {
+	if timeSinceLast > 0 {
+		return float64(bytesSinceLast) / timeSinceLast * 60 / 1024 / 1024
+	}
+	return 0
 }
 
 func handleMetricsSave(config *configs.Config, metricsCollector *metrics.Collector) {
