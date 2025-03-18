@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -17,23 +18,18 @@ import (
 )
 
 func main() {
-	// Parse command-line flags
 	configPath := flag.String("config", "", "Path to configuration file")
-	targetRate := flag.Int("rate", 1024, "Target data consumption rate in MB/min (for reference)")
 	duration := flag.Int("duration", 0, "Duration to run in minutes (0 for indefinite)")
-	verbose := flag.Bool("verbose", false, "Enable verbose logging")
 	outputMetrics := flag.String("metrics", "dataconsumer_metrics.json", "Path to save metrics")
 	saveInterval := flag.Int("save-interval", 60, "Save metrics every N seconds")
 	flag.Parse()
 
-	// Display banner
 	fmt.Println("╔════════════════════════════════════════════╗")
-	fmt.Println("║            DATA CONSUMER v2.0              ║")
-	fmt.Println("║  High-Performance Network Data Consumer    ║")
+	fmt.Println("║                 DATA CONSUMER v2.0                 ║")
+	fmt.Println("║      High-Performance Network Data Consumer      ║")
 	fmt.Println("╚════════════════════════════════════════════╝")
 	fmt.Printf("Running on %s with %d CPU cores\n\n", runtime.GOOS, runtime.NumCPU())
 
-	// Load configuration
 	config := configs.DefaultConfig()
 	if *configPath != "" {
 		var err error
@@ -42,15 +38,59 @@ func main() {
 			log.Fatalf("Failed to load configuration: %v", err)
 		}
 	}
-	config.TargetRate = *targetRate
+
+	var targetRateInput string
+	defaultRate := config.TargetRate
+	fmt.Printf("Enter target data consumption rate in MB/min (default: %d, or press Enter for default): ", defaultRate)
+	fmt.Scanln(&targetRateInput)
+	if targetRateInput != "" {
+		rate, err := strconv.Atoi(targetRateInput)
+		if err != nil {
+			fmt.Printf("Invalid target rate '%s'. Using default: %d MB/min.\n", targetRateInput, defaultRate)
+		} else {
+			config.TargetRate = rate
+		}
+	} else {
+		fmt.Printf("Using default target rate: %d MB/min.\n", defaultRate)
+	}
+
+	var verboseInput string
+	defaultVerbose := "N"
+	if config.VerboseLogging {
+		defaultVerbose = "Y"
+	}
+	fmt.Printf("Enable verbose logging? (y/N, default: %s, or press Enter for default): ", defaultVerbose)
+	fmt.Scanln(&verboseInput)
+	if verboseInput == "y" || verboseInput == "Y" {
+		config.VerboseLogging = true
+	} else if verboseInput != "" && verboseInput != "n" && verboseInput != "N" {
+		fmt.Printf("Invalid input '%s'. Using default: %s.\n", verboseInput, defaultVerbose)
+		config.VerboseLogging = defaultVerbose == "Y"
+	} else {
+		fmt.Printf("Using default verbose logging: %s.\n", defaultVerbose)
+	}
+
+	var workersInput string
+	defaultWorkers := runtime.NumCPU()
+	fmt.Printf("Enter the number of workers to use (default: %d, or press Enter for default): ", defaultWorkers)
+	fmt.Scanln(&workersInput)
+	if workersInput != "" {
+		workers, err := strconv.Atoi(workersInput)
+		if err != nil {
+			fmt.Printf("Invalid number of workers '%s'. Using default: %d.\n", workersInput, defaultWorkers)
+		} else {
+			config.ConcurrencyFactor = workers
+		}
+	} else {
+		config.ConcurrencyFactor = defaultWorkers
+		fmt.Printf("Using default number of workers: %d.\n", defaultWorkers)
+	}
+
 	config.Duration = *duration
-	config.VerboseLogging = *verbose
 	config.MetricsFile = *outputMetrics
 
-	// Initialize metrics collector
 	metricsCollector := metrics.NewCollector()
 
-	// Enable metrics logging
 	if config.SaveMetrics {
 		logFile := fmt.Sprintf("dataconsumer_log_%s.csv", time.Now().Format("20060102_150405"))
 		if err := metricsCollector.EnableFileLogging(logFile); err != nil {
@@ -60,36 +100,29 @@ func main() {
 		}
 	}
 
-	// Create output directory
 	os.MkdirAll(filepath.Dir(config.MetricsFile), 0755)
 
-	// Initialize consumer
 	dataConsumer, err := consumer.NewConsumer(config, metricsCollector)
 	if err != nil {
 		log.Fatalf("Failed to initialize consumer: %v", err)
 	}
 
-	// Handle signals for graceful shutdown
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	// Start consumption
 	startTime := time.Now()
 	fmt.Printf("Starting data consumption targeting at least %d MB/minute\n", config.TargetRate)
 	dataConsumer.Start()
 
-	// Periodic metrics display
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
-	// Metrics saving
 	metricsSaveTicker := time.NewTicker(time.Duration(*saveInterval) * time.Second)
 	defer metricsSaveTicker.Stop()
 
 	fmt.Println("Data consumption started...")
 	fmt.Println("Press Ctrl+C to stop")
 
-	// Handle duration or interruption
 	var durationTimer *time.Timer
 	if config.Duration > 0 {
 		fmt.Printf("Will run for %d minutes\n", config.Duration)
@@ -159,7 +192,7 @@ func saveAndPrintSummary(m *metrics.Collector, metricsFile string, startTime tim
 	}
 
 	fmt.Println("\n╔════════════════════════════════════════════╗")
-	fmt.Println("║               FINAL SUMMARY                ║")
+	fmt.Println("║                   FINAL SUMMARY                  ║")
 	fmt.Println("╚════════════════════════════════════════════╝")
 	fmt.Printf("Total data consumed: %.2f MB (%.2f GB)\n", stats.TotalMegabytes, stats.TotalMegabytes/1024)
 	fmt.Printf("Average rate: %.2f MB/min\n", stats.AverageRate)

@@ -1,0 +1,20 @@
+{
+  "BytesTransferred": 0,
+  "ElapsedTime": 26698849400,
+  "StartTime": "2025-03-17T12:58:40.9298586-04:00",
+  "CurrentRate": 0,
+  "PeakRate": 0,
+  "AverageRate": 0,
+  "TotalMegabytes": 0,
+  "RateHistory": [
+    {
+      "Timestamp": "2025-03-17T12:58:50.9331183-04:00",
+      "RateMBPS": 0
+    },
+    {
+      "Timestamp": "2025-03-17T12:59:00.9329562-04:00",
+      "RateMBPS": 0
+    }
+  ],
+  "LastUpdated": "2025-03-17T12:59:07.628708-04:00"
+}
