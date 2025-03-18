@@ -1,3 +1,3 @@
-module github.com/Jstarzz/DataConsumer
+module dataconsumer
 
-go 1.24.0
+go 1.21
