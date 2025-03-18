@@ -50,8 +50,8 @@ A high-performance network data consumer designed for measuring and stress-testi
 
     ```
     ╔════════════════════════════════════════════╗
-    ║                 DATA CONSUMER v2.0                 ║
-    ║      High-Performance Network Data Consumer      ║
+    ║                 DATA CONSUMER v2.0         ║
+    ║      High-Performance Network Data Consumer║
     ╚════════════════════════════════════════════╝
     Running on linux with 8 CPU cores
 
