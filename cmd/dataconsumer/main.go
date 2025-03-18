@@ -27,6 +27,7 @@ func main() {
 	fmt.Println("╔════════════════════════════════════════════╗")
 	fmt.Println("║                 DATA CONSUMER v2.0                 ║")
 	fmt.Println("║      High-Performance Network Data Consumer      ║")
+	fmt.Println("║      High-Performance Network Data Consumer      ║")
 	fmt.Println("╚════════════════════════════════════════════╝")
 	fmt.Printf("Running on %s with %d CPU cores\n\n", runtime.GOOS, runtime.NumCPU())
 
@@ -102,6 +103,13 @@ func loadConfiguration(configPath string) *configs.Config {
 }
 
 func promptForUserInput(config *configs.Config) *configs.Config {
+	config = promptForTargetRate(config)
+	config = promptForVerboseLogging(config)
+	config = promptForWorkerCount(config)
+	return config
+}
+
+func promptForTargetRate(config *configs.Config) *configs.Config {
 	var targetRateInput string
 	defaultRate := config.TargetRate
 	fmt.Printf("Enter target data consumption rate in MB/min (default: %d, or press Enter for default): ", defaultRate)
@@ -115,7 +123,10 @@ func promptForUserInput(config *configs.Config) *configs.Config {
 	} else {
 		fmt.Printf("Using default target rate: %d MB/min.\n", defaultRate)
 	}
+	return config
+}
 
+func promptForVerboseLogging(config *configs.Config) *configs.Config {
 	var verboseInput string
 	defaultVerbose := "N"
 	if config.VerboseLogging {
@@ -131,7 +142,10 @@ func promptForUserInput(config *configs.Config) *configs.Config {
 	} else {
 		fmt.Printf("Using default verbose logging: %s.\n", defaultVerbose)
 	}
+	return config
+}
 
+func promptForWorkerCount(config *configs.Config) *configs.Config {
 	var workersInput string
 	defaultWorkers := runtime.NumCPU()
 	fmt.Printf("Enter the number of workers to use (default: %d, or press Enter for default): ", defaultWorkers)
