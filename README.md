@@ -1,7 +1,7 @@
 # Data Consumer v2.0
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/Jstarzz)
-[![Go Report Card](https://img.shields.io/badge/Report%3F-yes-green.svg)](https://goreportcard.com/report/github.com/Jstarzz/DataConsumer)
+[![Go Report Card](https://img.shields.io/badge/Report%3F-A+-green.svg)](https://goreportcard.com/report/github.com/Jstarzz/DataConsumer)
 ![GitHub Release](https://github.com/Jstarzz/DataConsumer.git)
 
 A high-performance network data consumer designed for measuring and stress-testing network throughput. This application downloads data concurrently from multiple URLs and provides real-time metrics on data consumption.
