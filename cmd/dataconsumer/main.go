@@ -245,3 +245,6 @@ func saveAndPrintSummary(m *metrics.Collector, metricsFile string, startTime tim
 	fmt.Printf("Last rate: %.2f MB/min\n", stats.CurrentRate)
 	fmt.Printf("Total runtime: %s\n", totalRuntime.Round(time.Second))
 }
+
+// cat
+// dog
