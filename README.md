@@ -29,7 +29,7 @@ A high-performance network data consumer designed for measuring and stress-testi
 
 1.  Clone the repository:
     ```bash
-    git clone <your_repository_url>
+    git clone https://github.com/Jstarzz/DataConsumer.git
     cd dataconsumer
     ```
 2.  (Optional) Build the application:
