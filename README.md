@@ -1,12 +1,8 @@
-# Data Consumer v2.0
-
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/Jstarzz)
-[![Go Report Card](https://img.shields.io/badge/Report%3F-A+-green.svg)](https://goreportcard.com/report/github.com/Jstarzz/DataConsumer)
-![GitHub Release](https://github.com/Jstarzz/DataConsumer.git)
+# Data Consumer
 
 A high-performance network data consumer designed for measuring and stress-testing network throughput. This application downloads data concurrently from multiple URLs and provides real-time metrics on data consumption.
 
-## ✨ Features
+## Features
 
 * **Concurrent Data Downloading:** Utilizes multiple workers to download data from various sources simultaneously, maximizing network bandwidth usage.
 * **Interactive Configuration:** Prompts the user for target data rate, verbose logging preference, and the number of workers at startup.
@@ -19,25 +15,26 @@ A high-performance network data consumer designed for measuring and stress-testi
 * **Graceful Shutdown:** Handles interrupt signals (Ctrl+C) to ensure a clean exit.
 * **Command-Line Flags:** Supports command-line flags for additional configuration options.
 
-## 🚀 Getting Started
+## Getting started
 
-### 🛠️ Prerequisites
+### Prerequisites
 
-* [Go](https://go.dev/dl/) (version 1.16 or later) installed on your system.
+* [Go](https://go.dev/dl/) (1.21 or later) installed on your system.
 
-### ⚙️ Installation
+### Build
 
 1.  Clone the repository:
     ```bash
     git clone https://github.com/Jstarzz/DataConsumer.git
-    cd dataconsumer
+    cd DataConsumer
     ```
-2.  (Optional) Build the application:
+2.  Build the binary (the entry point is `cmd/dataconsumer`):
     ```bash
-    go build -o dataconsumer
+    go build -o dataconsumer ./cmd/dataconsumer
     ```
+    Or run it without building: `go run ./cmd/dataconsumer`.
 
-### 🎮 Usage
+### Usage
 
 1.  Navigate to the project directory in your terminal.
 2.  Run the application:
@@ -76,15 +73,15 @@ You can also use the following command-line flags for additional configuration:
 
 **Note:** If a configuration file is provided, the application will load the data sources from it but will still prompt you for the target rate, verbose option, and number of workers interactively.
 
-### ⚙️ Configuration File
+### Configuration file
 
 The application can load its data sources and default settings from a JSON configuration file. Here's an example `config.json`:
 
 ```json
 {
   "data_sources": [
-    "[https://speed.cloudflare.com/1000mb.bin](https://speed.cloudflare.com/1000mb.bin)",
-    "[https://ftp.arnes.si/software/ubuntu-releases/20.04/ubuntu-20.04.3-desktop-amd64.iso](https://ftp.arnes.si/software/ubuntu-releases/20.04/ubuntu-20.04.3-desktop-amd64.iso)"
+    "https://speed.cloudflare.com/1000mb.bin",
+    "https://ftp.arnes.si/software/ubuntu-releases/20.04/ubuntu-20.04.3-desktop-amd64.iso"
   ],
   "target_rate": 2048,
   "duration": 60,
@@ -95,3 +92,4 @@ The application can load its data sources and default settings from a JSON confi
   "use_randomization": true,
   "request_timeout": 30
 }
+```
